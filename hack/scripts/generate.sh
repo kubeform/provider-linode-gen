@@ -80,7 +80,6 @@ go mod vendor
 make gen fmt
 if repo_uptodate; then
     echo "Repository $api_repo is up-to-date."
-    exit 0
 else
     git commit -a -s -m "Generate code for provider:${provider_version} gen:${gen_version}"
     git push -u origin HEAD
@@ -113,7 +112,6 @@ go mod vendor
 make gen fmt
 if repo_uptodate; then
     echo "Repository $controller_repo is up-to-date."
-    exit 0
 else
     git commit -a -s -m "Generate code for provider:${provider_version} gen:${gen_version}"
     git push -u origin HEAD
@@ -141,7 +139,6 @@ go mod vendor
 make gen fmt
 if repo_uptodate; then
     echo "Repository $installer_repo is up-to-date."
-    exit 0
 else
     git commit -a -s -m "Generate code for provider:${provider_version} gen:${gen_version}"
     git push -u origin HEAD
@@ -151,5 +148,7 @@ else
     #     --message "$(git show -s --format=%b)"
 fi
 cd ..
+
+# update docs repo?
 
 popd
