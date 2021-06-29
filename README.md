@@ -1,9 +1,9 @@
 [![Slack](https://shields.io/badge/Join_Slack-salck?color=4A154B&logo=slack)](https://slack.appscode.com)
 [![Twitter](https://img.shields.io/twitter/follow/kubeform.svg?style=social&logo=twitter&label=Follow)](https://twitter.com/intent/follow?screen_name=Kubeform)
 
-# Kubeform Provider Linode Code Generator
+# Kubeform Linode Provider Code Generator
 
-Generates code for Kubeform Provider Linode
+Generates code for Kubeform Linode Provider
 
 ## Installation
 
