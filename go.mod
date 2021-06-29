@@ -4,5 +4,5 @@ go 1.16
 
 require (
 	github.com/linode/terraform-provider-linode v1.17.0
-	kubeform.dev/generator v0.0.0-20210628140515-053b2382841c
+	kubeform.dev/generator-v2 v0.0.0-20210629074745-6fa522f5abeb
 )

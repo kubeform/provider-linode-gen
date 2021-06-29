@@ -4,8 +4,9 @@ import (
 	"flag"
 	"log"
 
+	"kubeform.dev/generator-v2/util"
+
 	"github.com/linode/terraform-provider-linode/linode"
-	"kubeform.dev/generator/util"
 )
 
 func main() {
