@@ -16,9 +16,9 @@
 
 set -xeou pipefail
 
-SCRIPT_ROOT=$(realpath $(dirname "${BASH_SOURCE[0]}")/../..)
+SCRIPT_ROOT=$(realpath "$(dirname "${BASH_SOURCE[0]}")/../..")
 SCRIPT_NAME=$(basename "${BASH_SOURCE[0]}")
-pushd $SCRIPT_ROOT
+pushd "$SCRIPT_ROOT"
 
 # http://redsymbol.net/articles/bash-exit-traps/
 function cleanup() {
@@ -29,10 +29,10 @@ trap cleanup EXIT
 repo_uptodate() {
     # gomodfiles=(go.mod go.sum vendor/modules.txt)
     gomodfiles=(go.sum vendor/modules.txt)
-    changed=($(git diff --name-only))
+    IFS=$'\n' read -r -d '' -a changed < <(git diff --name-only && printf '\0')
     changed+=("${gomodfiles[@]}")
     # https://stackoverflow.com/a/28161520
-    diff=($(echo ${changed[@]} ${gomodfiles[@]} | tr ' ' '\n' | sort | uniq -u))
+    IFS=$'\n' read -r -d '' -a diff < <((echo "${changed[@]}" "${gomodfiles[@]}" | tr ' ' '\n' | sort | uniq -u) && printf '\0')
     return ${#diff[@]}
 }
 
@@ -41,7 +41,7 @@ gen_version=$(git rev-parse --short HEAD)
 provider_name=linode
 provider_repo="github.com/linode/terraform-provider-$provider_name"
 provider_version=$(go mod edit -json | jq -r ".Require[] | select(.Path == \"${provider_repo}\") | .Version")
-echo $provider_version
+echo "$provider_version"
 
 api_repo="github.com/kubeform/provider-${provider_name}-api"
 controller_repo="github.com/kubeform/provider-${provider_name}-controller"
@@ -52,7 +52,7 @@ echo "installing generator"
 
 go install -v ./...
 generator="provider-${provider_name}-gen"
-sudo mv $(go env GOPATH)/bin/${generator} /usr/local/bin
+sudo mv "$(go env GOPATH)/bin/${generator}" /usr/local/bin
 which $generator
 
 echo "Checking if ${api_repo} needs to be updated ..."
@@ -61,14 +61,14 @@ tmp_dir=$(mktemp -d -t ${provider_name}-XXXXXXXXXX)
 # always cleanup temp dir
 # ref: https://opensource.com/article/20/6/bash-trap
 trap \
-    "{ rm -rf "${tmp_dir}"; }" \
+    "{ rm -rf ""${tmp_dir}""; }" \
     SIGINT SIGTERM ERR EXIT
 
-mkdir -p ${tmp_dir}
-pushd $tmp_dir
+mkdir -p "${tmp_dir}"
+pushd "$tmp_dir"
 git clone --no-tags --no-recurse-submodules --depth=1 "https://${api_repo}.git"
 repo_dir=$(ls -b1)
-cd $repo_dir
+cd "$repo_dir" || exit
 git checkout -b "gen/${provider_version}-${gen_version}"
 make gen-apis
 go mod edit \
@@ -89,16 +89,15 @@ else
     #     --message "$(git show -s --format=%b)"
     api_version=$(git rev-parse --short HEAD)
 fi
-cd ..
 
 sleep 10 # don't cross GitHub rate limits
 
 echo "Checking if ${controller_repo} needs to be updated ..."
 
-cd $tmp_dir
+cd "$tmp_dir" || exit
 git clone --no-tags --no-recurse-submodules --depth=1 "https://${controller_repo}.git"
 repo_dir=$(ls -b1)
-cd $repo_dir
+cd "$repo_dir" || exit
 git checkout -b "gen/${provider_version}-${gen_version}"
 make controller-gen
 go mod edit \
@@ -121,18 +120,17 @@ else
     #     --message "$(git show -s --format=%b)"
     make qa
 fi
-cd ..
 
 sleep 10 # don't cross GitHub rate limits
 
 echo "Checking if ${installer_repo} needs to be updated ..."
 
-cd $tmp_dir
+cd "$tmp_dir" || exit
 git clone --no-tags --no-recurse-submodules --depth=1 "https://${installer_repo}.git"
 repo_dir=$(ls -b1)
-cd $repo_dir
+cd "$repo_dir" || exit
 git checkout -b "gen/${provider_version}-${gen_version}"
-go run ./hack/generate/... --provider=${provider_name} --input-dir=${tmp_dir}
+go run ./hack/generate/... --provider=${provider_name} --input-dir="${tmp_dir}"
 # update provider tag?
 go mod tidy
 go mod vendor
@@ -147,7 +145,6 @@ else
     #     --message "Generate code for provider:${provider_version} gen:${gen_version}" \
     #     --message "$(git show -s --format=%b)"
 fi
-cd ..
 
 # update docs repo?
 
