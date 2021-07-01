@@ -16,9 +16,9 @@
 
 set -eou pipefail
 
-SCRIPT_ROOT=$(realpath $(dirname "${BASH_SOURCE[0]}")/../..)
+SCRIPT_ROOT=$(realpath "$(dirname "${BASH_SOURCE[0]}")/../..")
 SCRIPT_NAME=$(basename "${BASH_SOURCE[0]}")
-pushd $SCRIPT_ROOT
+pushd "$SCRIPT_ROOT"
 
 # http://redsymbol.net/articles/bash-exit-traps/
 function cleanup() {
@@ -33,7 +33,7 @@ if git diff -s --exit-code HEAD; then
 fi
 
 pr_branch=${GITHUB_REPOSITORY}@${GITHUB_SHA:0:8}
-git checkout -b $pr_branch
+git checkout -b "$pr_branch"
 git commit -a -s -m "Update crds for $pr_branch"
 git push -u origin HEAD
 hub pull-request \
