@@ -67,9 +67,11 @@ trap \
 mkdir -p "${tmp_dir}"
 pushd "$tmp_dir"
 git clone --no-tags --no-recurse-submodules --depth=1 "https://${api_repo}.git"
-repo_dir=$(ls -b1)
+repo_dir="provider-${provider_name}-api"
 cd "$repo_dir" || exit
 git checkout -b "gen/${provider_version}-${gen_version}"
+rm -rf api apis client
+mkdir -p api apis client
 make gen-apis
 go mod edit \
     -require=sigs.k8s.io/controller-runtime@v0.9.0 \
@@ -82,13 +84,13 @@ if repo_uptodate; then
     echo "Repository $api_repo is up-to-date."
 else
     git commit -a -s -m "Generate code for provider:${provider_version} gen:${gen_version}"
-    git push -u origin HEAD
+    git push origin HEAD -f
     # hub pull-request \
     #     --labels automerge \
     #     --message "Generate code for provider:${provider_version} gen:${gen_version}" \
     #     --message "$(git show -s --format=%b)"
-    api_version=$(git rev-parse --short HEAD)
 fi
+api_version=$(git rev-parse --short HEAD)
 
 sleep 10 # don't cross GitHub rate limits
 
@@ -96,10 +98,12 @@ echo "Checking if ${controller_repo} needs to be updated ..."
 
 cd "$tmp_dir" || exit
 git clone --no-tags --no-recurse-submodules --depth=1 "https://${controller_repo}.git"
-repo_dir=$(ls -b1)
+repo_dir="provider-${provider_name}-controller"
 cd "$repo_dir" || exit
 git checkout -b "gen/${provider_version}-${gen_version}"
-make controller-gen
+rm -rf controllers
+mkdir controllers
+make gen-controllers
 go mod edit \
     -require="${provider_repo}@${provider_version}" \
     -require="${api_repo}@${api_version}" \
@@ -113,7 +117,7 @@ if repo_uptodate; then
     echo "Repository $controller_repo is up-to-date."
 else
     git commit -a -s -m "Generate code for provider:${provider_version} gen:${gen_version}"
-    git push -u origin HEAD
+    git push origin HEAD -f
     # hub pull-request \
     #     --labels automerge \
     #     --message "Generate code for provider:${provider_version} gen:${gen_version}" \
@@ -127,7 +131,7 @@ echo "Checking if ${installer_repo} needs to be updated ..."
 
 cd "$tmp_dir" || exit
 git clone --no-tags --no-recurse-submodules --depth=1 "https://${installer_repo}.git"
-repo_dir=$(ls -b1)
+repo_dir=installer
 cd "$repo_dir" || exit
 git checkout -b "gen/${provider_version}-${gen_version}"
 go run ./hack/generate/... --provider=${provider_name} --input-dir="${tmp_dir}"
@@ -139,7 +143,7 @@ if repo_uptodate; then
     echo "Repository $installer_repo is up-to-date."
 else
     git commit -a -s -m "Generate code for provider:${provider_version} gen:${gen_version}"
-    git push -u origin HEAD
+    git push origin HEAD -f
     # hub pull-request \
     #     --labels automerge \
     #     --message "Generate code for provider:${provider_version} gen:${gen_version}" \
