@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-set -xeou pipefail
+set -eou pipefail
 
 SCRIPT_ROOT=$(realpath "$(dirname "${BASH_SOURCE[0]}")/../..")
 SCRIPT_NAME=$(basename "${BASH_SOURCE[0]}")
@@ -69,8 +69,8 @@ pushd "$tmp_dir"
 git clone --no-tags --no-recurse-submodules --depth=1 "https://${api_repo}.git"
 repo_dir="provider-${provider_name}-api"
 cd "$repo_dir" || exit
-git checkout -b "gen/${provider_version}-${gen_version}"
-rm -rf api apis client
+git checkout -b "gen-${provider_version}-${gen_version}"
+rm -rf api apis client crds/*.yaml
 mkdir -p api apis client
 make gen-apis
 go mod edit \
@@ -80,15 +80,17 @@ go mod edit \
 go mod tidy
 go mod vendor
 make gen fmt
+go mod tidy
+go mod vendor
 if repo_uptodate; then
     echo "Repository $api_repo is up-to-date."
 else
-    git commit -a -s -m "Generate code for provider:${provider_version} gen:${gen_version}"
+    git commit -a -s -m "Generate code for provider@${provider_version} gen@${gen_version}"
     git push origin HEAD -f
-    # hub pull-request \
-    #     --labels automerge \
-    #     --message "Generate code for provider:${provider_version} gen:${gen_version}" \
-    #     --message "$(git show -s --format=%b)"
+    hub pull-request -f \
+        --labels automerge \
+        --message "Generate code for provider@${provider_version} gen@${gen_version}" \
+        --message "$(git show -s --format=%b)"
 fi
 api_version=$(git rev-parse --short HEAD)
 
@@ -100,30 +102,32 @@ cd "$tmp_dir" || exit
 git clone --no-tags --no-recurse-submodules --depth=1 "https://${controller_repo}.git"
 repo_dir="provider-${provider_name}-controller"
 cd "$repo_dir" || exit
-git checkout -b "gen/${provider_version}-${gen_version}"
+git checkout -b "gen-${provider_version}-${gen_version}"
 rm -rf controllers
 mkdir controllers
 make gen-controllers
 go mod edit \
     -require="${provider_repo}@${provider_version}" \
-    -require="${api_repo}@${api_version}" \
+    -require="kubeform.dev/provider-${provider_name}-api@${api_version}" \
     -require=sigs.k8s.io/controller-runtime@v0.9.0 \
     -require=kmodules.xyz/client-go@13d22e91512b80f1ac6cbb4452c3be73e7a21b88 \
     -require=kubeform.dev/apimachinery@7bcd34a30eb5956ae85815ea522e58b0c85db48e
 go mod tidy
 go mod vendor
 make gen fmt
+go mod tidy
+go mod vendor
 if repo_uptodate; then
     echo "Repository $controller_repo is up-to-date."
 else
-    git commit -a -s -m "Generate code for provider:${provider_version} gen:${gen_version}"
+    git commit -a -s -m "Generate code for provider@${provider_version} gen@${gen_version}"
     git push origin HEAD -f
-    # hub pull-request \
-    #     --labels automerge \
-    #     --message "Generate code for provider:${provider_version} gen:${gen_version}" \
-    #     --message "$(git show -s --format=%b)"
-    make qa
+    hub pull-request -f \
+        --labels automerge \
+        --message "Generate code for provider@${provider_version} gen@${gen_version}" \
+        --message "$(git show -s --format=%b)"
 fi
+make qa
 
 sleep 10 # don't cross GitHub rate limits
 
@@ -133,7 +137,7 @@ cd "$tmp_dir" || exit
 git clone --no-tags --no-recurse-submodules --depth=1 "https://${installer_repo}.git"
 repo_dir=installer
 cd "$repo_dir" || exit
-git checkout -b "gen/${provider_version}-${gen_version}"
+git checkout -b "gen-${provider_version}-${gen_version}"
 go run ./hack/generate/... --provider=${provider_name} --input-dir="${tmp_dir}"
 # update provider tag?
 go mod tidy
@@ -142,12 +146,12 @@ make gen fmt
 if repo_uptodate; then
     echo "Repository $installer_repo is up-to-date."
 else
-    git commit -a -s -m "Generate code for provider:${provider_version} gen:${gen_version}"
+    git commit -a -s -m "Generate code for provider@${provider_version} gen@${gen_version}"
     git push origin HEAD -f
-    # hub pull-request \
-    #     --labels automerge \
-    #     --message "Generate code for provider:${provider_version} gen:${gen_version}" \
-    #     --message "$(git show -s --format=%b)"
+    hub pull-request -f \
+        --labels automerge \
+        --message "Generate code for provider@${provider_version} gen@${gen_version}" \
+        --message "$(git show -s --format=%b)"
 fi
 
 # update docs repo?
