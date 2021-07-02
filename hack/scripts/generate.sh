@@ -140,17 +140,20 @@ cd "$repo_dir" || exit
 git checkout -b "gen-${provider_version}-${gen_version}"
 go run ./hack/generate/... --provider=${provider_name} --input-dir="${tmp_dir}"
 # update provider tag?
+make fmt
 go mod tidy
 go mod vendor
 make gen fmt
+go mod tidy
+go mod vendor
 if repo_uptodate; then
     echo "Repository $installer_repo is up-to-date."
 else
-    git commit -a -s -m "Generate code for provider@${provider_version} gen@${gen_version}"
+    git commit -a -s -m "Update ${provider_name} installer for provider@${provider_version} gen@${gen_version}"
     git push origin HEAD -f
     hub pull-request -f \
         --labels automerge \
-        --message "Generate code for provider@${provider_version} gen@${gen_version}" \
+        --message "Update ${provider_name} installer for provider@${provider_version} gen@${gen_version}" \
         --message "$(git show -s --format=%b)"
 fi
 
