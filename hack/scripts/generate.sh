@@ -85,6 +85,7 @@ go mod vendor
 if repo_uptodate; then
     echo "Repository $api_repo is up-to-date."
 else
+    git add --all
     git commit -a -s -m "Generate code for provider@${provider_version} gen@${gen_version}"
     git push origin HEAD -f
     hub pull-request -f \
@@ -109,6 +110,7 @@ make gen-controllers
 go mod edit \
     -require="${provider_repo}@${provider_version}" \
     -require="kubeform.dev/provider-${provider_name}-api@${api_version}" \
+    -require=gomodules.xyz/logs@v0.0.3 \
     -require=sigs.k8s.io/controller-runtime@v0.9.0 \
     -require=kmodules.xyz/client-go@13d22e91512b80f1ac6cbb4452c3be73e7a21b88 \
     -require=kubeform.dev/apimachinery@7bcd34a30eb5956ae85815ea522e58b0c85db48e
@@ -120,6 +122,7 @@ go mod vendor
 if repo_uptodate; then
     echo "Repository $controller_repo is up-to-date."
 else
+    git add --all
     git commit -a -s -m "Generate code for provider@${provider_version} gen@${gen_version}"
     git push origin HEAD -f
     hub pull-request -f \
@@ -149,6 +152,7 @@ go mod vendor
 if repo_uptodate; then
     echo "Repository $installer_repo is up-to-date."
 else
+    git add --all
     git commit -a -s -m "Update ${provider_name} installer for provider@${provider_version} gen@${gen_version}"
     git push origin HEAD -f
     hub pull-request -f \
