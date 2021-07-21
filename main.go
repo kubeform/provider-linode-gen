@@ -38,12 +38,13 @@ func main() {
 	}
 
 	opts := &util.GeneratorOptions{
-		ProviderName:       "linode",
-		ProviderData:       linode.Provider(),
-		ProviderImportPath: "github.com/linode/terraform-provider-linode/linode",
-		Version:            "v1alpha1",
-		APIsPath:           apisPath,
-		ControllerPath:     controllerPath,
+		ProviderName:         "linode",
+		ProviderNameOriginal: "linode",
+		ProviderData:         linode.Provider(),
+		ProviderImportPath:   "github.com/linode/terraform-provider-linode/linode",
+		Version:              "v1alpha1",
+		APIsPath:             apisPath,
+		ControllerPath:       controllerPath,
 	}
 	err := util.Generate(opts)
 	if err != nil {
