@@ -29,7 +29,7 @@ trap cleanup EXIT
 repo_uptodate() {
     # gomodfiles=(go.mod go.sum vendor/modules.txt)
     gomodfiles=(go.sum vendor/modules.txt)
-    IFS=$'\n' read -r -d '' -a changed < <(git diff --name-only && printf '\0')
+    IFS=$'\n' read -r -d '' -a changed < <((git status -s | cut -d" " -f3) && printf '\0')
     changed+=("${gomodfiles[@]}")
     # https://stackoverflow.com/a/28161520
     IFS=$'\n' read -r -d '' -a diff < <((echo "${changed[@]}" "${gomodfiles[@]}" | tr ' ' '\n' | sort | uniq -u) && printf '\0')
@@ -82,10 +82,10 @@ go mod vendor
 make gen fmt
 go mod tidy
 go mod vendor
+git add --all
 if repo_uptodate; then
     echo "Repository $api_repo is up-to-date."
 else
-    git add --all
     git commit -a -s -m "Generate code for provider@${provider_version} gen@${gen_version}"
     git push origin HEAD -f
     hub pull-request -f \
@@ -119,10 +119,10 @@ go mod vendor
 make gen fmt
 go mod tidy
 go mod vendor
+git add --all
 if repo_uptodate; then
     echo "Repository $controller_repo is up-to-date."
 else
-    git add --all
     git commit -a -s -m "Generate code for provider@${provider_version} gen@${gen_version}"
     git push origin HEAD -f
     hub pull-request -f \
@@ -149,10 +149,10 @@ go mod vendor
 make gen fmt
 go mod tidy
 go mod vendor
+git add --all
 if repo_uptodate; then
     echo "Repository $installer_repo is up-to-date."
 else
-    git add --all
     git commit -a -s -m "Update ${provider_name} installer for provider@${provider_version} gen@${gen_version}"
     git push origin HEAD -f
     hub pull-request -f \
