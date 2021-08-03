@@ -3,7 +3,7 @@
 
 # Kubeform Linode Provider Code Generator
 
-Generates code for Kubeform Linode Provider
+Kubeform code generator for [Terraform Linode Provider](https://github.com/linode/terraform-provider-linode)
 
 ## Installation
 
