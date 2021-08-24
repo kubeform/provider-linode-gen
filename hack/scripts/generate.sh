@@ -75,7 +75,7 @@ mkdir -p api apis client
 make gen-apis
 go mod edit \
     -require=sigs.k8s.io/controller-runtime@v0.9.0 \
-    -require=kmodules.xyz/client-go@13d22e91512b80f1ac6cbb4452c3be73e7a21b88 \
+    -require=kmodules.xyz/client-go@5e9cebbf1dfa80943ecb52b43686b48ba5df8363 \
     -require=kubeform.dev/apimachinery@7bcd34a30eb5956ae85815ea522e58b0c85db48e
 go mod tidy
 go mod vendor
@@ -112,7 +112,7 @@ go mod edit \
     -require="kubeform.dev/provider-${provider_name}-api@${api_version}" \
     -require=gomodules.xyz/logs@v0.0.3 \
     -require=sigs.k8s.io/controller-runtime@v0.9.0 \
-    -require=kmodules.xyz/client-go@13d22e91512b80f1ac6cbb4452c3be73e7a21b88 \
+    -require=kmodules.xyz/client-go@5e9cebbf1dfa80943ecb52b43686b48ba5df8363 \
     -require=kubeform.dev/apimachinery@7bcd34a30eb5956ae85815ea522e58b0c85db48e
 go mod tidy
 go mod vendor
