@@ -76,7 +76,7 @@ make gen-apis
 go mod edit \
     -require=sigs.k8s.io/controller-runtime@v0.9.0 \
     -require=kmodules.xyz/client-go@5e9cebbf1dfa80943ecb52b43686b48ba5df8363 \
-    -require=kubeform.dev/apimachinery@7bcd34a30eb5956ae85815ea522e58b0c85db48e
+    -require=kubeform.dev/apimachinery@ba5604d5a1ccd6ea2c07c6457c8b03f11ab00f63
 go mod tidy
 go mod vendor
 make gen fmt
@@ -113,7 +113,7 @@ go mod edit \
     -require=gomodules.xyz/logs@v0.0.3 \
     -require=sigs.k8s.io/controller-runtime@v0.9.0 \
     -require=kmodules.xyz/client-go@5e9cebbf1dfa80943ecb52b43686b48ba5df8363 \
-    -require=kubeform.dev/apimachinery@7bcd34a30eb5956ae85815ea522e58b0c85db48e
+    -require=kubeform.dev/apimachinery@ba5604d5a1ccd6ea2c07c6457c8b03f11ab00f63
 go mod tidy
 go mod vendor
 make gen fmt
