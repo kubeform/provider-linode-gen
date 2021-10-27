@@ -42,6 +42,7 @@ func main() {
 		ProviderNameOriginal: "linode",
 		ProviderData:         linode.Provider(),
 		ProviderImportPath:   "github.com/linode/terraform-provider-linode/linode",
+		ProviderConfig:       "linode/linode",
 		Version:              "v1alpha1",
 		APIsPath:             apisPath,
 		ControllerPath:       controllerPath,
