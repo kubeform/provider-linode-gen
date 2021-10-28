@@ -107,7 +107,9 @@ git checkout -b "gen-${provider_version}-${gen_version}"
 rm -rf controllers
 mkdir controllers
 make gen-controllers
+
 go mod edit \
+    -replace=google.golang.org/api=google.golang.org/api@v0.59.0 \
     -require="${provider_repo}@${provider_version}" \
     -require="kubeform.dev/provider-${provider_name}-api@${api_version}" \
     -require=gomodules.xyz/logs@v0.0.3 \
