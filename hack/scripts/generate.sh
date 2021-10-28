@@ -109,7 +109,19 @@ mkdir controllers
 make gen-controllers
 
 go mod edit \
-    -replace=google.golang.org/api=google.golang.org/api@v0.59.0 \
+    -dropreplace=google.golang.org/api \
+    -require=kubeform.dev/terraform-backend-sdk@v0.0.0-20210922115523-21574335f0db \
+    -dropreplace=github.com/Azure/go-ansiterm \
+    -dropreplace=github.com/Azure/go-autorest/tracing \
+    -dropreplace=github.com/Azure/go-autorest/logger \
+    -dropreplace=github.com/Azure/go-autorest/autorest/validation \
+    -dropreplace=github.com/Azure/go-autorest/autorest/to \
+    -dropreplace=github.com/Azure/go-autorest/autorest/mocks \
+    -dropreplace=github.com/Azure/go-autorest/autorest/date \
+    -dropreplace=github.com/Azure/go-autorest/autorest/adal \
+    -dropreplace=github.com/Azure/go-autorest/autorest \
+    -dropreplace=github.com/Azure/go-autorest \
+    -dropreplace=github.com/Azure/azure-sdk-for-go \
     -require="${provider_repo}@${provider_version}" \
     -require="kubeform.dev/provider-${provider_name}-api@${api_version}" \
     -require=gomodules.xyz/logs@v0.0.3 \
