@@ -43,6 +43,7 @@ func main() {
 		ProviderData:         linode.Provider(),
 		ProviderImportPath:   "github.com/linode/terraform-provider-linode/linode",
 		ProviderConfig:       "linode/linode",
+		TfPluginVersion:      "v2.8.0",
 		Version:              "v1alpha1",
 		APIsPath:             apisPath,
 		ControllerPath:       controllerPath,
